@@ -88,25 +88,34 @@ export default function DashboardPage() {
       {!loading && error && <ErrorNote message={error} />}
 
       {data && (
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* greeting */}
-          <Card className="bg-gradient-to-br from-brand-600 to-brand-500 !text-white">
-            <p className="text-sm font-medium text-brand-100">
-              {new Date().toLocaleDateString("en-GB", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </p>
-            <h2 className="mt-1 text-2xl font-bold">
-              {data.name ? `Hello, ${data.name.split(",")[0].trim()}` : "Welcome"}
-            </h2>
-            <p className="mt-1 text-sm text-brand-100">
-              {data.greeting ??
-                "Signed in to your student self-service portal."}
-            </p>
-          </Card>
+          <div className="relative overflow-hidden rounded-[var(--radius-card)] border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-white p-7 shadow-[var(--shadow-card)] sm:p-9">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-gold-500/10 blur-3xl"
+            />
+            <div className="relative">
+              <p className="eyebrow">
+                {new Date().toLocaleDateString("en-GB", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
+              <h2 className="mt-3 font-serif text-[2.1rem] leading-tight text-ink-900">
+                {data.name
+                  ? `Hello, ${data.name.split(",")[0].trim()}`
+                  : "Welcome"}
+              </h2>
+              <div className="rule-gold mt-4" />
+              <p className="mt-4 max-w-xl text-[0.95rem] leading-relaxed text-ink-600">
+                {data.greeting ??
+                  "Signed in to your student self-service portal."}
+              </p>
+            </div>
+          </div>
 
           {/* alerts from upstream */}
           {data.alerts.length > 0 && (
@@ -129,22 +138,27 @@ export default function DashboardPage() {
           )}
 
           {/* shortcuts */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {SHORTCUTS.map((s) => {
-              const Icon = s.icon;
-              return (
-                <Link key={s.href} href={s.href}>
-                  <Card className="group h-full transition hover:-translate-y-0.5 hover:shadow-pop">
-                    <span className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    <p className="font-semibold text-ink-900">{s.label}</p>
-                    <p className="mt-1 text-sm text-ink-500">{s.body}</p>
-                  </Card>
-                </Link>
-              );
-            })}
-          </div>
+          <section>
+            <p className="eyebrow mb-3">Quick access</p>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {SHORTCUTS.map((s) => {
+                const Icon = s.icon;
+                return (
+                  <Link key={s.href} href={s.href}>
+                    <Card className="group h-full transition duration-200 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-pop">
+                      <span className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-100">
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <p className="font-semibold text-ink-900">{s.label}</p>
+                      <p className="mt-1 text-sm leading-relaxed text-ink-500">
+                        {s.body}
+                      </p>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
         </div>
       )}
     </>

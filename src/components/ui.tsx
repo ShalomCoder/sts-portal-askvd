@@ -15,17 +15,25 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-ink-900">
-          {title}
-        </h1>
-        {subtitle && <p className="mt-1 text-sm text-ink-500">{subtitle}</p>}
+    <div className="mb-8 border-b border-ink-200/80 pb-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="max-w-2xl">
+          <h1 className="font-serif text-[2rem] leading-tight tracking-tight text-ink-900">
+            {title}
+          </h1>
+          <div className="rule-gold mt-3" />
+          {subtitle && (
+            <p className="mt-3 text-[0.95rem] leading-relaxed text-ink-500">
+              {subtitle}
+            </p>
+          )}
+        </div>
+        {action}
       </div>
-      {action}
     </div>
   );
 }
+
 
 /* ---------- fetch states ---------- */
 
@@ -51,12 +59,12 @@ export function EmptyState({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="card flex flex-col items-center gap-3 px-6 py-14 text-center">
-      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+    <div className="card flex flex-col items-center gap-3 px-6 py-16 text-center">
+      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
         {icon ?? "∅"}
       </span>
-      <p className="font-semibold text-ink-900">{title}</p>
-      <p className="max-w-md text-sm text-ink-500">{body}</p>
+      <p className="mt-1 font-serif text-lg text-ink-900">{title}</p>
+      <p className="max-w-md text-sm leading-relaxed text-ink-500">{body}</p>
     </div>
   );
 }

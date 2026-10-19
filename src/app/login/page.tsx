@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import Image from "next/image";
 
 function LoginForm() {
   const router = useRouter();
@@ -43,57 +44,44 @@ function LoginForm() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* ------- brand panel (hidden on small screens) ------- */}
-      <aside className="relative hidden overflow-hidden bg-ink-950 lg:flex lg:flex-col lg:justify-between lg:p-12">
+      <aside className="relative hidden overflow-hidden bg-brand-900 lg:flex lg:flex-col lg:justify-between lg:p-14">
         <div
           aria-hidden
-          className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full opacity-40 blur-3xl"
-          style={{
-            background:
-              "radial-gradient(circle, var(--color-brand-500), transparent 70%)",
-          }}
+          className="pointer-events-none absolute -right-24 -top-28 h-[26rem] w-[26rem] rounded-full bg-gold-500/10 blur-3xl"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute -bottom-40 -right-24 h-[28rem] w-[28rem] rounded-full opacity-30 blur-3xl"
-          style={{
-            background:
-              "radial-gradient(circle, var(--color-brand-700), transparent 70%)",
-          }}
+          className="pointer-events-none absolute -bottom-32 -left-24 h-[26rem] w-[26rem] rounded-full bg-brand-500/25 blur-3xl"
         />
-        <div className="relative">
-          <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-lg font-black text-white shadow-lg">
-              S
-            </span>
-            <div>
-              <p className="text-lg font-bold text-white">UG Student Portal</p>
-              <p className="text-xs text-ink-400">
-                Student Self-Service · sts.ug.edu.gh
-              </p>
-            </div>
-          </div>
-        </div>
 
-        <div className="relative max-w-md space-y-4">
-          <h1 className="text-4xl font-bold leading-tight text-white">
-            Everything you need,
-            <br />
-            in one modern place.
+        <Image
+          src="/brand/sts-logo.png"
+          alt="University of Ghana"
+          width={210}
+          height={91}
+          priority
+          className="relative h-auto w-[190px] opacity-95 [filter:brightness(0)_invert(1)]"
+        />
+
+        <div className="relative max-w-md">
+          <p className="eyebrow text-gold-300/90">Student Self-Service</p>
+          <h1 className="mt-3 font-serif text-[2.6rem] leading-[1.1] text-white">
+            Everything in one calm place.
           </h1>
-          <p className="text-ink-300 leading-relaxed">
-            Pay fees, view your profile, check exam schedules, read academic
-            calendar dates, lodge complaints and more — through a fast,
-            clutter-free interface backed by the official STS backend.
+          <p className="mt-4 leading-relaxed text-brand-100/80">
+            Pay fees, view your profile, check exam schedules, read the academic
+            calendar, lodge complaints and more — through a clean, uncluttered
+            interface backed by the official STS service.
           </p>
-          <ul className="grid gap-2 pt-2 text-sm text-ink-300">
+          <ul className="mt-7 space-y-2.5 text-sm text-brand-100/80">
             {[
               "Secure login with your Student ID & PIN",
               "Fee payments via GhIPPS, Zenith, CalBank & more",
               "Complaints, suggestions and exam issue reporting",
             ].map((t) => (
-              <li key={t} className="flex items-start gap-2">
+              <li key={t} className="flex items-start gap-2.5">
                 <svg
-                  className="mt-0.5 h-4 w-4 shrink-0 text-brand-400"
+                  className="mt-0.5 h-4 w-4 shrink-0 text-gold-400"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -109,49 +97,63 @@ function LoginForm() {
           </ul>
         </div>
 
-        <p className="relative text-xs text-ink-500">
+        <p className="relative text-xs text-brand-200/60">
           Unofficial frontend. All data comes from sts.ug.edu.gh.
         </p>
       </aside>
 
       {/* ------- form panel ------- */}
-      <main className="flex items-center justify-center bg-white px-6 py-12">
+      <main className="flex items-center justify-center px-6 py-14">
         <div className="w-full max-w-sm rise">
-          <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-base font-black text-white">
-              S
+          <div className="mb-9 flex items-center gap-3 lg:hidden">
+            <Image
+              src="/brand/sts-icon.png"
+              alt="University of Ghana"
+              width={40}
+              height={40}
+              className="h-10 w-10 object-contain"
+            />
+            <span className="leading-tight">
+              <span className="block text-[0.95rem] font-semibold text-ink-900">
+                University of Ghana
+              </span>
+              <span className="block text-[0.75rem] text-ink-500">
+                Student Self-Service
+              </span>
             </span>
-            <p className="text-base font-bold text-ink-900">UG Student Portal</p>
           </div>
 
-          <h2 className="text-2xl font-bold text-ink-900">Welcome back</h2>
-          <p className="mt-1 text-sm text-ink-500">
+          <h2 className="font-serif text-[1.9rem] leading-tight text-ink-900">
+            Welcome back
+          </h2>
+          <div className="rule-gold mt-3" />
+          <p className="mt-3 text-sm text-ink-500">
             Sign in with your Student ID or Staff ID.
           </p>
 
           {expired && (
-            <div className="banner banner-warn mt-5">
+            <div className="banner banner-warn mt-6">
               Your session expired. Please sign in again.
             </div>
           )}
           {error && (
-            <div className="banner banner-danger mt-5" role="alert">
+            <div className="banner banner-danger mt-6" role="alert">
               {error}
             </div>
           )}
 
-          <form onSubmit={onSubmit} className="mt-6 space-y-5">
+          <form onSubmit={onSubmit} className="mt-7 space-y-5">
             {/* role toggle */}
             <div>
               <span className="label">I am a</span>
-              <div className="grid grid-cols-2 gap-1 rounded-xl bg-ink-100 p-1">
+              <div className="grid grid-cols-2 gap-1 rounded-full bg-ink-100 p-1">
                 {(["student", "staff"] as const).map((role) => (
                   <button
                     key={role}
                     type="button"
                     onClick={() => setLoginAs(role)}
                     className={
-                      "rounded-lg px-3 py-2 text-sm font-semibold capitalize transition " +
+                      "rounded-full px-3 py-2 text-sm font-semibold capitalize transition " +
                       (loginAs === role
                         ? "bg-white text-ink-900 shadow-sm"
                         : "text-ink-500 hover:text-ink-700")
@@ -197,7 +199,7 @@ function LoginForm() {
                 <button
                   type="button"
                   onClick={() => setShowPin((s) => !s)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-ink-400 hover:text-ink-700"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-ink-400 hover:text-ink-700"
                   aria-label={showPin ? "Hide PIN" : "Show PIN"}
                 >
                   {showPin ? (
@@ -233,16 +235,16 @@ function LoginForm() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-ink-500">
+          <p className="mt-7 text-center text-sm text-ink-500">
             Forgot your Student ID or PIN?{" "}
             <a
               href="/forgot-pin"
-              className="font-semibold text-brand-600 hover:text-brand-700 hover:underline"
+              className="font-semibold text-brand-700 hover:text-brand-800 hover:underline"
             >
               Recover it here
             </a>
           </p>
-          <p className="mt-8 text-center text-xs text-ink-400">
+          <p className="mt-10 text-center text-xs text-ink-400">
             Unofficial frontend · connects securely to sts.ug.edu.gh
           </p>
         </div>
@@ -262,8 +264,8 @@ export default function LoginPage() {
 function LoginSkeleton() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <aside className="hidden bg-ink-950 lg:block" />
-      <main className="flex items-center justify-center bg-white px-6 py-12">
+      <aside className="hidden bg-brand-900 lg:block" />
+      <main className="flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm space-y-5">
           <div className="skeleton h-10 w-40" />
           <div className="skeleton h-8 w-full" />

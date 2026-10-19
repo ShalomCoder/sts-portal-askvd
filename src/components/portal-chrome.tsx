@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ComponentType, type SVGProps } from "react";
@@ -43,7 +44,7 @@ const GROUPS: { title: string; items: NavItem[] }[] = [
     items: [
       { href: "/exams", label: "Exam Schedule", icon: BookIcon },
       { href: "/calendar", label: "Academic Calendar", icon: CalendarIcon },
-      { href: "/faq", label: "FAQ", icon: HelpIcon },
+      { href: "/faq", label: "Questions & Answers", icon: HelpIcon },
     ],
   },
   {
@@ -71,6 +72,79 @@ const GROUPS: { title: string; items: NavItem[] }[] = [
   },
 ];
 
+function Brand() {
+  return (
+    <Link href="/dashboard" className="flex items-center gap-3">
+      <Image
+        src="/brand/sts-icon.png"
+        alt="University of Ghana"
+        width={40}
+        height={40}
+        className="h-10 w-10 object-contain"
+      />
+      <span className="leading-tight">
+        <span className="block text-[0.92rem] font-semibold text-ink-900">
+          University of Ghana
+        </span>
+        <span className="block text-[0.72rem] text-ink-500">
+          Student Self-Service
+        </span>
+      </span>
+    </Link>
+  );
+}
+
+function Nav({
+  pathname,
+  onNavigate,
+}: {
+  pathname: string;
+  onNavigate?: () => void;
+}) {
+  return (
+    <nav className="flex flex-1 flex-col overflow-y-auto pr-1">
+      {GROUPS.map((group, gi) => (
+        <div key={group.title} className={gi === 0 ? "" : "mt-6"}>
+          <p className="mb-1.5 px-3 text-[0.7rem] font-medium tracking-wide text-ink-400">
+            {group.title}
+          </p>
+          <ul className="space-y-0.5">
+            {group.items.map((item) => {
+              const active =
+                pathname === item.href || pathname.startsWith(item.href + "/");
+              const Icon = item.icon;
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={onNavigate}
+                    className={
+                      "group flex items-center gap-3 rounded-full px-3 py-2 text-[0.9rem] transition " +
+                      (active
+                        ? "bg-brand-50 font-semibold text-brand-900"
+                        : "text-ink-600 hover:bg-ink-100/70 hover:text-ink-900")
+                    }
+                  >
+                    <Icon
+                      className={
+                        "h-[18px] w-[18px] shrink-0 transition " +
+                        (active
+                          ? "text-brand-600"
+                          : "text-ink-400 group-hover:text-ink-600")
+                      }
+                    />
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
 export default function PortalChrome({
   children,
   name,
@@ -83,6 +157,8 @@ export default function PortalChrome({
   const [open, setOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
+  const initial = (name ?? "S").trim().charAt(0).toUpperCase();
+
   async function logout() {
     setLoggingOut(true);
     try {
@@ -92,113 +168,87 @@ export default function PortalChrome({
     }
   }
 
-  const sidebar = (
-    <nav className="flex h-full flex-col gap-6 p-5">
-      <Link href="/dashboard" className="flex items-center gap-3 px-1">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-sm font-black text-white">
-          S
+  const footer = (
+    <div className="mt-4 border-t border-ink-200/80 pt-4">
+      <div className="flex items-center gap-3 px-1">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700">
+          {initial}
         </span>
-        <span className="text-[15px] font-bold text-white">
-          UG Student Portal
-        </span>
-      </Link>
-
-      <div className="flex-1 space-y-6 overflow-y-auto pr-1">
-        {GROUPS.map((group) => (
-          <div key={group.title}>
-            <p className="px-3 pb-2 text-[11px] font-bold uppercase tracking-widest text-ink-500">
-              {group.title}
-            </p>
-            <ul className="space-y-1">
-              {group.items.map((item) => {
-                const active =
-                  pathname === item.href || pathname.startsWith(item.href + "/");
-                const Icon = item.icon;
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      onClick={() => setOpen(false)}
-                      className={
-                        "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition " +
-                        (active
-                          ? "bg-brand-600 text-white shadow-md shadow-brand-900/40"
-                          : "text-ink-300 hover:bg-white/5 hover:text-white")
-                      }
-                    >
-                      <Icon className="h-[18px] w-[18px] shrink-0" />
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[0.85rem] font-semibold text-ink-800">
+            {name ?? "Student"}
+          </p>
+          <p className="text-[0.7rem] text-ink-400">Signed in</p>
+        </div>
       </div>
-
-      <div className="border-t border-white/10 pt-4">
-        <button
-          onClick={logout}
-          disabled={loggingOut}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-ink-300 transition hover:bg-red-500/10 hover:text-red-300 disabled:opacity-50"
-        >
-          <LogoutIcon className="h-[18px] w-[18px]" />
-          {loggingOut ? "Signing out…" : "Sign out"}
-        </button>
-      </div>
-    </nav>
+      <button
+        onClick={logout}
+        disabled={loggingOut}
+        className="mt-3 flex w-full items-center gap-3 rounded-full px-3 py-2 text-[0.9rem] font-medium text-ink-500 transition hover:bg-ink-100/70 hover:text-ink-800 disabled:opacity-50"
+      >
+        <LogoutIcon className="h-[18px] w-[18px]" />
+        {loggingOut ? "Signing out…" : "Sign out"}
+      </button>
+    </div>
   );
 
   return (
-    <div className="min-h-screen bg-ink-50 lg:pl-[264px]">
-      {/* desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[264px] bg-ink-950 lg:block">
-        {sidebar}
+    <div className="min-h-screen lg:pl-[268px]">
+      {/* desktop rail */}
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[268px] flex-col border-r border-ink-200/80 px-5 py-7 lg:flex">
+        <Brand />
+        <div className="mt-8 flex flex-1 flex-col overflow-hidden">
+          <Nav pathname={pathname} />
+        </div>
+        {footer}
       </aside>
+
+      {/* mobile top bar */}
+      <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-ink-200/70 bg-paper/85 px-4 py-3 backdrop-blur lg:hidden">
+        <button
+          className="rounded-full p-2 text-ink-600 hover:bg-ink-100"
+          onClick={() => setOpen(true)}
+          aria-label="Open menu"
+        >
+          <MenuIcon className="h-5 w-5" />
+        </button>
+        <Brand />
+        <button
+          onClick={() => router.push("/profile")}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700"
+          aria-label="Open profile"
+        >
+          {initial}
+        </button>
+      </header>
 
       {/* mobile drawer */}
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
-            className="absolute inset-0 bg-ink-950/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-ink-950/40 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-          <aside className="absolute inset-y-0 left-0 w-[280px] bg-ink-950 shadow-2xl">
-            {sidebar}
+          <aside className="absolute inset-y-0 left-0 flex w-[300px] flex-col bg-paper px-5 py-7 shadow-pop">
+            <div className="flex items-center justify-between">
+              <Brand />
+              <button
+                className="rounded-full p-2 text-ink-500 hover:bg-ink-100"
+                onClick={() => setOpen(false)}
+                aria-label="Close menu"
+              >
+                <XIcon className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="mt-8 flex flex-1 flex-col overflow-hidden">
+              <Nav pathname={pathname} onNavigate={() => setOpen(false)} />
+            </div>
+            {footer}
           </aside>
         </div>
       )}
 
-      {/* topbar */}
-      <header className="sticky top-0 z-20 border-b border-ink-200 bg-white/80 backdrop-blur-md">
-        <div className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6">
-          <button
-            className="rounded-lg p-2 text-ink-600 hover:bg-ink-100 lg:hidden"
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-          >
-            <MenuIcon className="h-5 w-5" />
-          </button>
-          <div className="hidden lg:block" />
-          <div className="flex items-center gap-3">
-            {name && (
-              <span className="hidden max-w-[240px] truncate text-sm font-semibold text-ink-700 sm:block">
-                {name}
-              </span>
-            )}
-            <button
-              onClick={() => router.push("/profile")}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-sm font-bold text-white"
-              aria-label="Open profile"
-            >
-              {(name ?? "S").trim().charAt(0).toUpperCase()}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-4xl px-5 pb-24 pt-8 sm:px-8 lg:pt-12">
         <div className="rise">{children}</div>
       </main>
     </div>

@@ -145,7 +145,7 @@ export default function ServicesPage() {
                 <Link key={item.label} href={item.href} target="_blank" rel="noopener noreferrer">
                   <Card className="group h-full transition hover:-translate-y-0.5 hover:shadow-pop">
                     <div className="flex items-start justify-between gap-3">
-                      <span className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">
+                      <span className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-100">
                         <GridIcon className="h-5 w-5" />
                       </span>
                       <ExternalIcon className="h-4 w-4 text-ink-300" />

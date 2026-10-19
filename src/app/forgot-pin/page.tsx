@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 type SubmitState =
   | { kind: "idle" }
@@ -81,30 +82,40 @@ export default function ForgotPinPage() {
   }
 
   return (
-    <div className="min-h-screen bg-ink-50 px-4 py-10">
+    <div className="min-h-screen bg-paper px-4 py-10">
       <div className="mx-auto w-full max-w-xl rise">
         <div className="mb-6 flex items-center justify-between">
           <Link href="/login" className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-base font-black text-white">
-              S
-            </span>
-            <span className="text-base font-bold text-ink-900">
-              UG Student Portal
+            <Image
+              src="/brand/sts-icon.png"
+              alt="University of Ghana"
+              width={40}
+              height={40}
+              className="h-10 w-10 object-contain"
+            />
+            <span className="leading-tight">
+              <span className="block text-[0.95rem] font-semibold text-ink-900">
+                University of Ghana
+              </span>
+              <span className="block text-[0.72rem] text-ink-500">
+                Student Self-Service
+              </span>
             </span>
           </Link>
           <Link
             href="/login"
-            className="text-sm font-semibold text-brand-600 hover:underline"
+            className="text-sm font-semibold text-brand-700 hover:underline"
           >
             Back to sign in
           </Link>
         </div>
 
         <div className="card p-7">
-          <h1 className="text-xl font-bold text-ink-900">
+          <h1 className="font-serif text-[1.6rem] leading-tight text-ink-900">
             Recover your Student ID / PIN
           </h1>
-          <p className="mt-1 text-sm text-ink-500">
+          <div className="rule-gold mt-3" />
+          <p className="mt-3 text-sm text-ink-500">
             Fill the form exactly as your records appear at UG. All fields
             marked <span className="text-red-600">*</span> are mandatory.
           </p>
