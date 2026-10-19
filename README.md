@@ -75,11 +75,44 @@ Browser ──same-origin──► Next.js server ──HTTPS──► sts.ug.ed
 | `/exam-complaint` | Exam issue report with evidence uploads |
 | `/suggestions` | Suggestion box |
 | `/pin-reset` | PIN recovery info & support contacts |
-| `/services` | Long-tail services (links to the official site) |
+| `/services` | Service hub — registration, certificates, finance, welfare |
+| `/services/<slug>` | An individual rebuilt service (see below) |
 
 API routes live under `src/app/api/`: `auth/login`, `auth/logout`,
-`auth/forgot-pin`, `sts/[...path]`, `profile`, `payments`, `welcome`,
-`pay/initiate`.
+`auth/forgot-pin`, `sts/[...path]`, `service/[slug]`, `courses`, `profile`,
+`payments`, `welcome`, `pay/initiate`.
+
+## Long-tail services
+
+The services that used to be external links are now rebuilt in-app. Each one
+is declared in `src/lib/services.ts` (upstream page, submit endpoint, form
+fields) and rendered by `src/components/service-form.tsx`:
+
+| Service | Upstream page | Submits to |
+| --- | --- | --- |
+| Course Specialisation | `/provide-specialization` | `save-specialization` |
+| Deferment Request | `/deferment` | `savedeferment` |
+| Withdrawal Request | `/requestrefund` | `saverefundrequest` |
+| Matriculation Registration | `/matriculation` | `savematriculation` |
+| Verify Course & Lecturer | `/cle-leturer-select` | `save-cle-lecturer` |
+| Certificate Booking | `/request-certificate` | `save-cert-request` |
+| Internship Letter | `/internship-payments` | `generate-internship-letter` |
+| WES Transcript Request | `/wes/home` | `wes/submit` |
+| Request a Refund | `/refundrequest` | `saverefundrequest` |
+| Student Loan Consent | `/studentloan` | `sendconsent` |
+| STARLife Consent | `/starlife` | `starlifesendconsent` |
+
+**How it stays faithful:** hidden values carried by the original form (student
+id, name, programme, level, college, fees…) are scraped server-side by
+`/api/service/[slug]` and replayed on submit, so no university data is
+hard-coded. Real `<select>` option lists are scraped the same way; a couple of
+fields (course lists, examiners) load from dedicated endpoints instead.
+Adding a service is a spec entry — no new page or route.
+
+Anything not rebuilt yet (medical examination, transcript ordering, COVID
+assessment, psychosocial checklist, national service verification, HERC/UGRC,
+UG Hospital E-Consult) is listed on `/services` with a clear note that it opens
+on another system.
 
 ## ⚠️ Mutating flows are implemented but **untested**
 
@@ -92,6 +125,9 @@ warning banner in the UI:
 - exam complaints (`save-exam-complaint`, with file uploads)
 - suggestions (`suggestions`)
 - PIN recovery (`saveforgotpin`)
+- the `/services/<slug>` forms: specialisation, deferment, withdrawal,
+  matriculation, certificate booking, internship letter, WES, refund, student
+  loan consent, STARLife consent, course/lecturer verification
 
 Test these against a throwaway account before relying on them.
 
@@ -104,7 +140,8 @@ Test these against a throwaway account before relying on them.
 - Upstream HTML fragments (FAQ answers, notification bodies) are sanitized
   before rendering (`src/lib/sanitize.ts` server-side, `sanitize-client.ts` in
   the browser).
-- `fetchcoursesforcomplaints` returns a `pin` field upstream. The UI deliberately
-  drops it and never displays or logs it.
+- `fetchcoursesforcomplaints` returns a `pin` field upstream. The portal never
+  exposes it: `/api/courses` strips the PIN server-side and the generic proxy
+  result is only used to build `<option>`s.
 - `FINDINGS.md` documents the reverse-engineering analysis (contracts, fields,
   payment engines).
