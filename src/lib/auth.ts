@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import type { UpstreamCookies } from "./http";
+import { AUTH_COOKIE, SESSION_COOKIE } from "./session";
 
-export const AUTH_COOKIE = "sts_auth";
+export { AUTH_COOKIE, SESSION_COOKIE };
 
 /**
  * Get the relayed upstream session cookies for the current request.
@@ -13,7 +14,7 @@ export async function getSessionCookies(): Promise<UpstreamCookies> {
   if (jar.get(AUTH_COOKIE)?.value !== "1") return {};
 
   const out: UpstreamCookies = {};
-  const session = jar.get("sts_session")?.value;
+  const session = jar.get(SESSION_COOKIE)?.value;
   if (session) out.sts_session = session;
 
   const xsrf = jar.get("XSRF-TOKEN")?.value;

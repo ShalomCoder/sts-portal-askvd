@@ -77,6 +77,7 @@ Browser ──same-origin──► Next.js server ──HTTPS──► sts.ug.ed
 | `/pin-reset` | PIN recovery info & support contacts |
 | `/services` | Service hub — registration, certificates, finance, welfare |
 | `/services/<slug>` | An individual rebuilt service (see below) |
+| `/offline` | Static offline fallback (used by the service worker) |
 
 API routes live under `src/app/api/`: `auth/login`, `auth/logout`,
 `auth/forgot-pin`, `sts/[...path]`, `service/[slug]`, `courses`, `profile`,
@@ -113,6 +114,52 @@ Anything not rebuilt yet (medical examination, transcript ordering, COVID
 assessment, psychosocial checklist, national service verification, HERC/UGRC,
 UG Hospital E-Consult) is listed on `/services` with a clear note that it opens
 on another system.
+
+## Sessions & sign-out
+
+The portal is signed in only while **both** cookies exist:
+
+| Cookie | Meaning |
+| --- | --- |
+| `sts_auth` | our marker, set at login (Max-Age 6 h) |
+| `sts_session` | the relayed upstream Laravel session |
+
+Upstream sends `sts_session` as a **browser session cookie** (no `Max-Age`), so
+the browser drops it when it closes — while `sts_auth` survives for hours. That
+mismatch used to produce a redirect loop: the middleware only checked
+`sts_auth`, so a signed-out visitor was bounced `/dashboard → /login →
+/dashboard …` forever, because the dashboard's data calls immediately 401'd.
+
+Three things prevent it now:
+
+1. **`src/lib/session.ts`** — `isSessionPresent()` requires *both* cookies, and
+   middleware uses it. `isHalfSignedIn()` detects the stale state.
+2. **Self-healing middleware** — on a stale marker it clears the dead cookies
+   (on the redirect *and* on the 401) and sends the visitor to
+   `/login?expired=1`, so the login form is always reachable.
+3. **`endSession()` in `src/lib/client.ts`** — when any API call 401s, the
+   client clears cookies via `/api/auth/logout` (now a public route) and only
+   then lands on `/login?expired=1`, with a timeout as a safety net. Both
+   `api()` and `useAuthedFetch()` route through it.
+
+The `expired=1` flag makes the middleware skip its "already signed in" bounce,
+so the loop is impossible rather than merely unlikely.
+
+## Installable (PWA)
+
+- `src/app/manifest.ts` → `/manifest.webmanifest` (standalone, brand theme,
+  shortcuts for Dashboard / Pay / Exams / Notifications).
+- Icons are generated from the **original portal's branding logo**
+  (`assets/images/logo/stsnew-01.png`, stored byte-identical as
+  `public/brand/sts-logo.png`). It is a white knockout, so the icons composite
+  it onto the brand violet: `icon-192`, `icon-512`, `icon-maskable-512`
+  (inset to the safe zone) and `apple-touch-icon`. The favicon stays the
+  portal's own `icon.png` crest.
+- `public/sw.js` + `src/components/pwa-register.tsx` (production only).
+  The service worker is deliberately conservative because every useful page is
+  authenticated: it **never** caches `/api/*`, **never** caches page HTML, and
+  caches only build assets and brand images. Offline navigations show
+  `/offline`.
 
 ## ⚠️ Mutating flows are implemented but **untested**
 

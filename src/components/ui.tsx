@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ApiError } from "@/lib/client";
+import { ApiError, endSession } from "@/lib/client";
 
 /* ---------- page header ---------- */
 
@@ -86,7 +86,7 @@ export function useAuthedFetch<T>(url: string) {
         if (res.status === 401) {
           const body = await res.json().catch(() => ({}));
           if (body?.unauthenticated) {
-            window.location.href = "/login";
+            endSession();
             return;
           }
           throw new ApiError(body?.message ?? "Unauthorized", 401);

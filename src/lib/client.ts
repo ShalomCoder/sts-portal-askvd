@@ -14,6 +14,37 @@ export class ApiError extends Error {
   }
 }
 
+let ending = false;
+
+/**
+ * The portal can end up "half signed in": our `sts_auth` marker survives while
+ * the relayed upstream session cookie is gone (upstream sends it as a browser
+ * session cookie, so closing the browser drops it).
+ *
+ * Redirecting straight to /login in that state makes the middleware bounce back
+ * to /dashboard — an endless loop — so we clear the local cookies first and
+ * land on /login?expired=1. The `expired` flag makes the middleware skip its
+ * "already signed in" bounce even if clearing fails (e.g. offline), which makes
+ * the loop impossible rather than merely unlikely.
+ */
+export function endSession(): void {
+  if (ending) return;
+  ending = true;
+
+  let navigated = false;
+  const go = () => {
+    if (navigated) return;
+    navigated = true;
+    window.location.replace("/login?expired=1");
+  };
+
+  void fetch("/api/auth/logout", { method: "POST", keepalive: true })
+    .catch(() => undefined)
+    .finally(go);
+  // Don't leave the user hanging if the request stalls.
+  window.setTimeout(go, 1500);
+}
+
 export async function api<T = unknown>(
   path: string,
   init?: RequestInit,
@@ -30,15 +61,15 @@ export async function api<T = unknown>(
   });
 
   if (res.status === 401) {
-    const data = await res.json().catch(() => ({}));
-    if (data && (data.unauthenticated || data.message === "Invalid Student ID or PIN")) {
-      if (data.unauthenticated) {
-        window.location.href = "/login";
-        throw new ApiError("Session expired", 401);
-      }
+    const data = (await res.json().catch(() => ({}))) as {
+      message?: string;
+      unauthenticated?: boolean;
+    };
+    if (data.unauthenticated) {
+      endSession();
+      throw new ApiError("Session expired", 401);
     }
-    const msg = (data as { message?: string }).message ?? "Unauthorized";
-    throw new ApiError(msg, 401);
+    throw new ApiError(data.message ?? "Unauthorized", 401);
   }
 
   if (!res.ok) {
