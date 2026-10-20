@@ -9,14 +9,10 @@ export const metadata: Metadata = {
     "Modern frontend for the University of Ghana Student Self-Service (STS) portal.",
   applicationName: "UG Student Portal",
   manifest: "/manifest.webmanifest",
-  mobileWebApp: {
-    capable: true,
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "UG Portal",
-    startupImage: [],
   },
   formatDetection: { telephone: false },
   icons: {
