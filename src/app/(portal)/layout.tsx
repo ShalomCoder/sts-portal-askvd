@@ -1,5 +1,9 @@
 import { cookies } from "next/headers";
 import PortalChrome from "@/components/portal-chrome";
+import { SessionTimeoutModal } from "@/components/session-timeout";
+import { NetworkStatusBanner } from "@/components/network-status";
+import { PwaInstallBanner } from "@/components/pwa-install-banner";
+import { BgSyncListener } from "@/components/bg-sync-listener";
 
 export default async function PortalLayout({
   children,
@@ -17,5 +21,13 @@ export default async function PortalLayout({
     }
   }
 
-  return <PortalChrome name={name}>{children}</PortalChrome>;
+  return (
+    <PortalChrome name={name}>
+      <NetworkStatusBanner />
+      <PwaInstallBanner />
+      {children}
+      <SessionTimeoutModal />
+      <BgSyncListener />
+    </PortalChrome>
+  );
 }

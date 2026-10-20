@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import PwaRegister from "@/components/pwa-register";
+import { PwaProvider } from "@/components/pwa-provider";
 
 export const metadata: Metadata = {
   title: "University of Ghana · Student Portal",
@@ -33,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <PwaProvider>{children}</PwaProvider>
         <PwaRegister />
       </body>
     </html>
