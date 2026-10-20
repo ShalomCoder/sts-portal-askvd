@@ -64,6 +64,29 @@ html {
   text-rendering: optimizeLegibility;
 }
 
+html.dark {
+  --color-paper: #151218;
+  --color-paper-soft: #1b1720;
+  --color-ink-50: #211c26;
+  --color-ink-100: #2a232f;
+  --color-ink-200: #352d3a;
+  --color-ink-300: #453c4a;
+  --color-ink-400: #70647a;
+  --color-ink-500: #8d8098;
+  --color-ink-600: #b5a9c0;
+  --color-ink-700: #c9bfd4;
+  --color-ink-800: #e3ddea;
+  --color-ink-900: #f5f2f8;
+  --color-brand-50: #2a2035;
+  --color-brand-100: #342a42;
+  --color-brand-200: #443455;
+  --color-brand-600: #a98bd6;
+  --color-brand-700: #c9b0e8;
+  --color-gold-100: #3a3220;
+  --color-gold-200: #4a3d24;
+  --color-gold-500: #d9b97a;
+}
+
 body {
   background-color: var(--color-paper);
   /* barely-there violet wash in the top corner — keeps the page breathing */
@@ -78,6 +101,14 @@ body {
   font-family: var(--font-sans);
 }
 
+html.dark body {
+  background-image: radial-gradient(
+    900px 520px at 92% -12%,
+    rgb(135 88 182 / 0.18),
+    transparent 68%
+  );
+}
+
 ::selection {
   background: var(--color-gold-200);
   color: var(--color-ink-900);
@@ -86,7 +117,7 @@ body {
 /* ---------- building blocks ---------- */
 
 .card {
-  background: #fff;
+  background: var(--color-paper-soft);
   border: 1px solid var(--color-ink-200);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
