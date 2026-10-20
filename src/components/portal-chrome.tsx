@@ -23,6 +23,8 @@ import {
   XIcon,
   MegaphoneIcon,
 } from "@/components/icons";
+import { NotificationBadge } from "@/components/notification-badge";
+import { ThemeToggle } from "@/lib/theme";
 
 type NavItem = {
   href: string;

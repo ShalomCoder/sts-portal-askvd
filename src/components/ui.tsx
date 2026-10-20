@@ -15,15 +15,15 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-8 border-b border-ink-200/80 pb-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-6 border-b border-ink-200/80 pb-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="max-w-2xl">
-          <h1 className="font-serif text-[2rem] leading-tight tracking-tight text-ink-900">
+          <h1 className="font-serif text-[1.7rem] leading-tight tracking-tight text-ink-900">
             {title}
           </h1>
-          <div className="rule-gold mt-3" />
+          <div className="rule-gold mt-2" />
           {subtitle && (
-            <p className="mt-3 text-[0.95rem] leading-relaxed text-ink-500">
+            <p className="mt-2 text-[0.9rem] leading-relaxed text-ink-500">
               {subtitle}
             </p>
           )}
