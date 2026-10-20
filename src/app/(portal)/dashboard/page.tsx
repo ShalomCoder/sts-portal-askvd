@@ -11,6 +11,7 @@ import {
   ChatIcon,
   WalletIcon,
 } from "@/components/icons";
+import { PullToRefresh } from "@/components/pull-to-refresh";
 
 type Welcome = {
   name: string | null;
@@ -65,21 +66,18 @@ const SHORTCUTS = [
 ];
 
 export default function DashboardPage() {
-  const { data, error, loading } = useAuthedFetch<Welcome>("/api/welcome");
+  const { data, error, loading, refetch } = useAuthedFetch<Welcome>("/api/welcome");
 
-  return (
+  const content = (
     <>
-      <PageHeader
-        title="Dashboard"
-        subtitle="Your student self-service overview"
-      />
+      <PageHeader title="Dashboard" subtitle="Overview" />
 
       {loading && (
-        <div className="space-y-4">
-          <Skeleton className="h-24 w-full" />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="space-y-3">
+          <Skeleton className="h-20 w-full" />
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-28 w-full" />
+              <Skeleton key={i} className="h-24 w-full" />
             ))}
           </div>
         </div>
@@ -88,12 +86,12 @@ export default function DashboardPage() {
       {!loading && error && <ErrorNote message={error} />}
 
       {data && (
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* greeting */}
-          <div className="relative overflow-hidden rounded-[var(--radius-card)] border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-white p-7 shadow-[var(--shadow-card)] sm:p-9">
+          <div className="relative overflow-hidden rounded-[var(--radius-card)] border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-white p-6 shadow-[var(--shadow-card)] sm:p-7">
             <div
               aria-hidden
-              className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-gold-500/10 blur-3xl"
+              className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-gold-500/10 blur-3xl"
             />
             <div className="relative">
               <p className="eyebrow">
@@ -104,15 +102,14 @@ export default function DashboardPage() {
                   year: "numeric",
                 })}
               </p>
-              <h2 className="mt-3 font-serif text-[2.1rem] leading-tight text-ink-900">
+              <h2 className="mt-2 font-serif text-[1.8rem] leading-tight text-ink-900">
                 {data.name
                   ? `Hello, ${data.name.split(",")[0].trim()}`
                   : "Welcome"}
               </h2>
-              <div className="rule-gold mt-4" />
-              <p className="mt-4 max-w-xl text-[0.95rem] leading-relaxed text-ink-600">
-                {data.greeting ??
-                  "Signed in to your student self-service portal."}
+              <div className="rule-gold mt-3" />
+              <p className="mt-3 max-w-xl text-[0.9rem] leading-relaxed text-ink-600">
+                {data.greeting ?? "Signed in to your student self-service portal."}
               </p>
             </div>
           </div>
@@ -139,18 +136,18 @@ export default function DashboardPage() {
 
           {/* shortcuts */}
           <section>
-            <p className="eyebrow mb-3">Quick access</p>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <p className="eyebrow mb-2">Quick access</p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {SHORTCUTS.map((s) => {
                 const Icon = s.icon;
                 return (
                   <Link key={s.href} href={s.href}>
-                    <Card className="group h-full transition duration-200 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-pop">
-                      <span className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-100">
-                        <Icon className="h-5 w-5" />
+                    <Card className="group h-full transition duration-200 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-pop p-4">
+                      <span className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-100">
+                        <Icon className="h-4 w-4" />
                       </span>
-                      <p className="font-semibold text-ink-900">{s.label}</p>
-                      <p className="mt-1 text-sm leading-relaxed text-ink-500">
+                      <p className="text-[0.95rem] font-semibold text-ink-900">{s.label}</p>
+                      <p className="mt-1 text-xs leading-relaxed text-ink-500">
                         {s.body}
                       </p>
                     </Card>
@@ -162,5 +159,15 @@ export default function DashboardPage() {
         </div>
       )}
     </>
+  );
+
+  return (
+    <PullToRefresh
+      onRefresh={async () => {
+        await refetch();
+      }}
+    >
+      {content}
+    </PullToRefresh>
   );
 }
