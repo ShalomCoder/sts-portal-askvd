@@ -63,6 +63,10 @@ export function middleware(req: NextRequest) {
 
     const url = new URL("/login", req.url);
     if (stale) url.searchParams.set("expired", "1");
+    // Return-to-URL: remember where the user was going
+    if (!stale) {
+      url.searchParams.set("next", pathname + req.nextUrl.search);
+    }
     const res = NextResponse.redirect(url);
     // Self-heal: drop the marker that would otherwise send us straight back.
     if (stale) clearSessionCookies(res);
